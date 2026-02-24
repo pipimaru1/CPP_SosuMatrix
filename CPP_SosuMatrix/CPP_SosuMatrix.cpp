@@ -23,10 +23,9 @@ static constexpr COLORREF COLOR_TEXT = RGB(0xFF, 0xFF, 0xFF);
 static HFONT g_font = nullptr;
 
 // ハイライト用
-static int      g_highlightQ = 0;                 // 0: 無効, 1..N*M: 対象
-static COLORREF g_hlCellColor = RGB(255, 220, 80);
-static COLORREF g_hlTextColor = RGB(0, 0, 0);
-
+//static int      g_highlightQ = 0;                 // 0: 無効, 1..N*M: 対象
+//static COLORREF g_hlCellColor = RGB(255, 220, 80);
+//static COLORREF g_hlTextColor = RGB(0, 0, 0);
 
 // セルごとに色を変える（std::unordered_map）
 //static std::unordered_set<int> g_highlightSet; // 1..N*M
@@ -164,11 +163,11 @@ static void PaintGrid(HWND hwnd, HDC hdc, int _M, int _N)
 
     // ペン/ブラシ
     HPEN gridPen = CreatePen(PS_SOLID, 1, COLOR_GRID);
-    HBRUSH normalBrush = CreateSolidBrush(COLOR_CELL);
-    HBRUSH hlBrush = CreateSolidBrush(g_hlCellColor); //追加
+    //HBRUSH normalBrush = CreateSolidBrush(COLOR_CELL);
+    //HBRUSH hlBrush = CreateSolidBrush(g_hlCellColor); //追加
 
     HGDIOBJ oldPen = SelectObject(hdc, gridPen);
-    HGDIOBJ oldBrush = SelectObject(hdc, normalBrush);
+    //HGDIOBJ oldBrush = SelectObject(hdc, normalBrush);
 
     // フォント
     HGDIOBJ oldFont = nullptr;
@@ -205,12 +204,18 @@ static void PaintGrid(HWND hwnd, HDC hdc, int _M, int _N)
                 textColor = it->second.text;
             }
 
-            SelectObject(hdc, isHL ? hlBrush : normalBrush);
+            //SelectObject(hdc, isHL ? hlBrush : normalBrush);
             SetTextColor(hdc, isHL ? textColor : COLOR_TEXT);
 
 			// セルの塗り
-            SelectObject(hdc, isHL ? hlBrush : normalBrush);
+            //SelectObject(hdc, isHL ? hlBrush : normalBrush);
+            //Rectangle(hdc, x0, y0, x1, y1);
+             
+            HBRUSH b = GetBrush(cellColor);
+            HGDIOBJ oldB = SelectObject(hdc, b);
             Rectangle(hdc, x0, y0, x1, y1);
+            SelectObject(hdc, oldB);
+
             // 数字
             std::wstring s = std::to_wstring(val);
             DrawTextW(hdc, s.c_str(), (int)s.size(), &cell,
@@ -221,12 +226,11 @@ static void PaintGrid(HWND hwnd, HDC hdc, int _M, int _N)
     }
 
     // 後始末
-    if (oldFont) SelectObject(hdc, oldFont);
-    SelectObject(hdc, oldBrush);
-    SelectObject(hdc, oldPen);
+    if (oldFont) 
+        SelectObject(hdc, oldFont);
 
-    DeleteObject(hlBrush); //追加
-    DeleteObject(normalBrush);
+    //DeleteObject(hlBrush); //追加
+    //DeleteObject(normalBrush);
     DeleteObject(gridPen);
 }
 
@@ -258,31 +262,31 @@ static bool GetCellRectByQ(HWND hwnd, int _Q, RECT* out, int _M, int _N) {
 }
 
 // Q のセルをハイライト（色変更）する
-static void HighlightCell(HWND hwnd, int q, COLORREF cellColor, COLORREF textColor, int _M, int _N) 
-{
-    // 以前のハイライト領域も消す必要があるので、旧領域と新領域を両方Invalidateする
-    RECT oldRc{};
-    bool hasOld = GetCellRectByQ(hwnd, g_highlightQ, &oldRc, _M, _N );
-
-    g_highlightQ = q;
-    g_hlCellColor = cellColor;
-    g_hlTextColor = textColor;
-
-    RECT newRc{};
-    bool hasNew = GetCellRectByQ(hwnd, g_highlightQ, &newRc, __M, __N);
-
-    if (hasOld) InvalidateRect(hwnd, &oldRc, TRUE);
-    if (hasNew) InvalidateRect(hwnd, &newRc, TRUE);
-}
+//static void HighlightCell(HWND hwnd, int q, COLORREF cellColor, COLORREF textColor, int _M, int _N) 
+//{
+//    // 以前のハイライト領域も消す必要があるので、旧領域と新領域を両方Invalidateする
+//    RECT oldRc{};
+//    bool hasOld = GetCellRectByQ(hwnd, g_highlightQ, &oldRc, _M, _N );
+//
+//    g_highlightQ = q;
+//    g_hlCellColor = cellColor;
+//    g_hlTextColor = textColor;
+//
+//    RECT newRc{};
+//    bool hasNew = GetCellRectByQ(hwnd, g_highlightQ, &newRc, __M, __N);
+//
+//    if (hasOld) InvalidateRect(hwnd, &oldRc, TRUE);
+//    if (hasNew) InvalidateRect(hwnd, &newRc, TRUE);
+//}
 
 // ハイライト解除
-static void ClearHighlight(HWND hwnd, int _M, int _N) 
-{
-    RECT oldRc{};
-    bool hasOld = GetCellRectByQ(hwnd, g_highlightQ, &oldRc, _M, _N);
-    g_highlightQ = 0;
-    if (hasOld) InvalidateRect(hwnd, &oldRc, TRUE);
-}
+//static void ClearHighlight(HWND hwnd, int _M, int _N) 
+//{
+//    RECT oldRc{};
+//    bool hasOld = GetCellRectByQ(hwnd, g_highlightQ, &oldRc, _M, _N);
+//    g_highlightQ = 0;
+//    if (hasOld) InvalidateRect(hwnd, &oldRc, TRUE);
+//}
 
 static bool IsValidQ(int q, int _M, int _N)
 {
@@ -337,7 +341,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             {
                 SetMenu(hwnd, hMenu);
                 // メニューのチェック状態を更新
-                CheckMenuItem(hMenu, IDM_HIGHLIGHT, g_highlightQ ? MF_CHECKED : MF_UNCHECKED);
+                //CheckMenuItem(hMenu, IDM_HIGHLIGHT, g_highlightQ ? MF_CHECKED : MF_UNCHECKED);
             }
             return 0;
         }break;
@@ -426,7 +430,8 @@ int WINAPI wWinMain(HINSTANCE hInst, HINSTANCE, PWSTR, int nCmdShow) {
 
     HWND hwnd = CreateWindowW(
         kClassName,
-        L"Grid Numbers (Win32/GDI)",
+        //L"Grid Numbers (Win32/GDI)",
+        L"素数で遊ぼう",
         style,
         CW_USEDEFAULT, CW_USEDEFAULT,
         rc.right - rc.left, rc.bottom - rc.top,
