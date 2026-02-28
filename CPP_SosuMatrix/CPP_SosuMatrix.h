@@ -28,8 +28,7 @@ public:
     void SetCellHighlight(HWND hwnd, int q, COLORREF cellColor, COLORREF textColor);
     void InvalidateCellByQ(HWND hwnd, int q);
     void RemoveCellHighlight(HWND hwnd, int q);
-
-
+    bool IsValidQ(int q);
 
  //   int M() const { return __M; }
  //   int N() const { return __N; }

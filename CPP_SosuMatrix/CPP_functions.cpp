@@ -242,36 +242,9 @@ bool GetCellRectByQ(HWND hwnd, int _Q, RECT* out, int _M, int _N) {
     return true;
 }
 
-// Q のセルをハイライト（色変更）する
-//static void HighlightCell(HWND hwnd, int q, COLORREF cellColor, COLORREF textColor, int _M, int _N) 
-//{
-//    // 以前のハイライト領域も消す必要があるので、旧領域と新領域を両方Invalidateする
-//    RECT oldRc{};
-//    bool hasOld = GetCellRectByQ(hwnd, g_highlightQ, &oldRc, _M, _N );
-//
-//    g_highlightQ = q;
-//    g_hlCellColor = cellColor;
-//    g_hlTextColor = textColor;
-//
-//    RECT newRc{};
-//    bool hasNew = GetCellRectByQ(hwnd, g_highlightQ, &newRc, __M, __N);
-//
-//    if (hasOld) InvalidateRect(hwnd, &oldRc, TRUE);
-//    if (hasNew) InvalidateRect(hwnd, &newRc, TRUE);
-//}
-
-// ハイライト解除
-//static void ClearHighlight(HWND hwnd, int _M, int _N) 
-//{
-//    RECT oldRc{};
-//    bool hasOld = GetCellRectByQ(hwnd, g_highlightQ, &oldRc, _M, _N);
-//    g_highlightQ = 0;
-//    if (hasOld) InvalidateRect(hwnd, &oldRc, TRUE);
-//}
-
-bool IsValidQ(int q, int _M, int _N)
+bool MatrixArea::IsValidQ(int q)
 {
-    return (1 <= q && q <= _N * _M);
+    return (1 <= q && q <= __N * __M);
 }
 void MatrixArea::InvalidateCellByQ(HWND hwnd, int q)
 {
@@ -283,14 +256,14 @@ void MatrixArea::InvalidateCellByQ(HWND hwnd, int q)
 }
 void MatrixArea::SetCellHighlight(HWND hwnd, int q, COLORREF cellColor, COLORREF textColor)
 {
-    if (!IsValidQ(q, __M, __N))
+    if (!IsValidQ(q))
         return;
     g_highlightMap[q] = CellStyle{ cellColor, textColor };
     InvalidateCellByQ(hwnd, q);
 }
 void MatrixArea::RemoveCellHighlight(HWND hwnd, int q)
 {
-    if (!IsValidQ(q, __M, __N))
+    if (!IsValidQ(q))
         return;
     if (g_highlightMap.erase(q) > 0)
         InvalidateCellByQ(hwnd, q);
