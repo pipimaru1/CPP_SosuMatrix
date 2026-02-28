@@ -60,20 +60,24 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
         case WM_MOUSEMOVE:
         {
-            TRACKMOUSEEVENT tme{};
-            tme.cbSize = sizeof(tme);
-            tme.dwFlags = TME_LEAVE;
-            tme.hwndTrack = hwnd;
-            TrackMouseEvent(&tme);
+            //マウスオーバーのセルを表示するのは80x100以下に限定（描画負荷対策）
+			if (_MtxArea.GET_M() < 80 && _MtxArea.GET_N()<80) 
+            {
+                TRACKMOUSEEVENT tme{};
+                tme.cbSize = sizeof(tme);
+                tme.dwFlags = TME_LEAVE;
+                tme.hwndTrack = hwnd;
+                TrackMouseEvent(&tme);
 
-            const int x = static_cast<short>(LOWORD(lParam));
-            const int y = static_cast<short>(HIWORD(lParam));
+                const int x = static_cast<short>(LOWORD(lParam));
+                const int y = static_cast<short>(HIWORD(lParam));
 
-            int q = 0;
-            if (_MtxArea.TryGetQFromPoint(hwnd, x, y, &q))
-                _MtxArea.SetHoverCell(hwnd, q);
-            else
-                _MtxArea.ClearHoverCell(hwnd);
+                int q = 0;
+                if (_MtxArea.TryGetQFromPoint(hwnd, x, y, &q))
+                    _MtxArea.SetHoverCell(hwnd, q);
+                else
+                    _MtxArea.ClearHoverCell(hwnd);
+            }
 
             return 0;
         }

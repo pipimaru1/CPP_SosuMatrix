@@ -161,6 +161,8 @@ void MatrixArea::ClearHoverCell(HWND hwnd)
     InvalidateCellByQ(hwnd, previousHover);
 }
 
+#define HILIGHT_HOVERED_WIDTH 5
+
 void MatrixArea::PaintGrid(HWND hwnd, HDC hdc)
 {
     RECT rc{};
@@ -175,8 +177,10 @@ void MatrixArea::PaintGrid(HWND hwnd, HDC hdc)
     auto xAt = [&](int c) -> int { return (int)((long long)W * c / __M); };
     auto yAt = [&](int r) -> int { return (int)((long long)H * r / __N); };
 
-    HPEN gridPen = CreatePen(PS_SOLID, 1, COLOR_GRID);
-    HPEN hoverPen = CreatePen(PS_SOLID, 1, COLOR_HOVER_BORDER);
+    HPEN gridPen    = CreatePen(PS_SOLID, 1, COLOR_GRID);
+    HPEN hoverPen   = CreatePen(PS_SOLID, HILIGHT_HOVERED_WIDTH, COLOR_HOVER_BORDER);
+    HPEN unhoverPen = CreatePen(PS_SOLID, HILIGHT_HOVERED_WIDTH, COLOR_BG); //太くした枠を消去するためのペン。背景色と同じ色で、太さはhoverPenと同じにする。
+
     HGDIOBJ oldPen = SelectObject(hdc, gridPen);
 
     HGDIOBJ oldFont = nullptr;
@@ -186,9 +190,12 @@ void MatrixArea::PaintGrid(HWND hwnd, HDC hdc)
     SetBkMode(hdc, TRANSPARENT);
 
     int val = 1;
+
+# pragma omp parallel for
     for (int r = 0; r < __N; ++r) {
         int y0 = yAt(r);
         int y1 = yAt(r + 1);
+# pragma omp parallel for
         for (int c = 0; c < __M; ++c) {
             int x0 = xAt(c);
             int x1 = xAt(c + 1);
@@ -199,12 +206,34 @@ void MatrixArea::PaintGrid(HWND hwnd, HDC hdc)
 
             HBRUSH b = GetBrush(number.cellColor);
             HGDIOBJ oldB = SelectObject(hdc, b);
-            HGDIOBJ cellPen = SelectObject(hdc, isHovered ? hoverPen : gridPen);
+            HGDIOBJ cellPen;
 
-            Rectangle(hdc, x0, y0, x1, y1);
-            SelectObject(hdc, cellPen);
-            SelectObject(hdc, oldB);
+            if (isHovered)
+            {
+				int x0_inner = std::max(0, x0 + HILIGHT_HOVERED_WIDTH / 2);
+				int y0_inner = std::max(0, y0 + HILIGHT_HOVERED_WIDTH / 2);
+				int x1_inner = std::min(W, x1 - HILIGHT_HOVERED_WIDTH / 2);
+				int y1_inner = std::min(H, y1 - HILIGHT_HOVERED_WIDTH / 2);
 
+                cellPen = SelectObject(hdc, hoverPen);
+                Rectangle(hdc, x0_inner, y0_inner, x1_inner, y1_inner);
+                SelectObject(hdc, cellPen);
+                SelectObject(hdc, oldB);
+            }
+            else
+            {
+                //int x0_inner = std::max(0, x0 + HILIGHT_HOVERED_WIDTH / 2);
+                //int y0_inner = std::max(0, y0 + HILIGHT_HOVERED_WIDTH / 2);
+                //int x1_inner = std::min(W, x1 - HILIGHT_HOVERED_WIDTH / 2);
+                //int y1_inner = std::min(H, y1 - HILIGHT_HOVERED_WIDTH / 2);
+
+                //cellPen = SelectObject(hdc, unhoverPen);
+                //Rectangle(hdc, x0_inner, y0_inner, x1_inner, y1_inner);
+                cellPen = SelectObject(hdc, gridPen);
+                Rectangle(hdc, x0, y0, x1, y1);
+                SelectObject(hdc, cellPen);
+                SelectObject(hdc, oldB);
+            }
             SetTextColor(hdc, number.textColor);
             std::wstring s = std::to_wstring(number.value);
             DrawTextW(hdc, s.c_str(), (int)s.size(), &cell, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
