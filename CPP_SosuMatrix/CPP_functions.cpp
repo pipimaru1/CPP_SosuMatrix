@@ -6,6 +6,8 @@ constexpr COLORREF COLOR_GRID = RGB(0x80, 0x80, 0x80);
 constexpr COLORREF COLOR_CELL = RGB(0x30, 0x30, 0x30);
 constexpr COLORREF COLOR_TEXT = RGB(0xFF, 0xFF, 0xFF);
 
+constexpr COLORREF COLOR_HOVER = RGB(0xFF, 0xFF, 0x00);
+
 HFONT g_font = nullptr;
 std::unordered_map<COLORREF, HBRUSH> g_brushCache;
 
@@ -192,7 +194,9 @@ void MatrixArea::PaintGrid(HWND hwnd, HDC hdc)
 
             const NaturalNumber& number = _NaNumbers[val - 1];
             const bool isHovered = (val == _hoverQ);
-            const COLORREF cellColor = isHovered ? RGB(0x66, 0x66, 0x66) : number.cellColor;
+            
+            const COLORREF cellColor = isHovered ? COLOR_HOVER : number.cellColor;
+            
             HBRUSH b = GetBrush(cellColor);
             HGDIOBJ oldB = SelectObject(hdc, b);
             Rectangle(hdc, x0, y0, x1, y1);

@@ -191,10 +191,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				case IDM_SIZE_Y179:_MtxArea.SetSize(_MtxArea.GET_M(), 179); PostMessage(hwnd, WM_SIZE, 0, 0); return 0;
 				case IDM_SIZE_Y211:_MtxArea.SetSize(_MtxArea.GET_M(), 211); PostMessage(hwnd, WM_SIZE, 0, 0); return 0;
 
-
-
-
-
                 case IDM_HIGHLIGHT:
                 {
                     // ハイライトのトグル
