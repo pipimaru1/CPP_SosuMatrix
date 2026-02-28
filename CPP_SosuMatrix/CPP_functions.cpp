@@ -71,7 +71,8 @@ int FindBestFontHeight(HDC hdc, int cellW, int cellH, int digits) {
             DEFAULT_PITCH | FF_DONTCARE,
             L"Segoe UI"
         );
-        if (!f) return false;
+        if (!f) 
+            return false;
 
         HGDIOBJ old = SelectObject(hdc, f);
         SIZE sz{};
@@ -79,7 +80,8 @@ int FindBestFontHeight(HDC hdc, int cellW, int cellH, int digits) {
         SelectObject(hdc, old);
         DeleteObject(f);
 
-        if (!ok) return false;
+        if (!ok) 
+            return false;
 
         // çÇÇ≥ÇÕÉtÉHÉìÉgçÇÇ≥ÇªÇÃÇ‡ÇÃÇÊÇË text extent ÇÃ cy ÇóDêÊ
         return (sz.cx <= availW) && (sz.cy <= availH);
