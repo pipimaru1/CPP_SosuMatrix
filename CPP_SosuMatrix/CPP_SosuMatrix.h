@@ -55,6 +55,7 @@ public:
     void RebuildFont(HWND hwnd, HDC hdc, int clientW, int clientH);
     void PaintGrid(HWND hwnd, HDC hdc);
     void SetCellHighlight(HWND hwnd, int q, COLORREF cellColor, COLORREF textColor);
+    void ApplyMultiplesHighlight(HWND hwnd, int q);
     void InvalidateCellByQ(HWND hwnd, int q);
     void RemoveCellHighlight(HWND hwnd, int q);
     void ClearAllCellHighlights(HWND hwnd);
