@@ -13,6 +13,7 @@
 
 #include "Resource.h" // リソース定義（メニュー等）
 
+MatrixArea _MtxArea(10,12, 1600,1200); // グローバルなMatrixAreaインスタンス
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) 
 {
@@ -40,7 +41,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             HDC hdc = GetDC(hwnd);
             RECT rc{};
             GetClientRect(hwnd, &rc);
-            RebuildFont(hwnd, hdc, (int)(rc.right - rc.left), (int)(rc.bottom - rc.top), __M, __N);
+            _MtxArea.RebuildFont(hwnd, hdc, (int)(rc.right - rc.left), (int)(rc.bottom - rc.top));
             ReleaseDC(hwnd, hdc);
 
             InvalidateRect(hwnd, nullptr, TRUE);
@@ -51,7 +52,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         {
             PAINTSTRUCT ps{};
             HDC hdc = BeginPaint(hwnd, &ps);
-            PaintGrid(hwnd, hdc, __M, __N   );
+            _MtxArea.PaintGrid(hwnd, hdc);
             
             EndPaint(hwnd, &ps);
             return 0;
@@ -79,9 +80,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                 case IDM_HIGHLIGHT:
                 {
                     // ハイライトのトグル
-                    if (g_highlightMap.empty()) {
-                        SetCellHighlight(hwnd, 50, RGB(255, 220, 80), RGB(0, 0, 0), __M, __N);
-                        SetCellHighlight(hwnd, 77, RGB(80, 220, 255), RGB(0, 0, 0), __M, __N);
+                    if (g_highlightMap.empty()) 
+                    {
+                        _MtxArea.SetCellHighlight(hwnd, 50, RGB(255, 220, 80), RGB(0, 0, 0));
+                        _MtxArea.SetCellHighlight(hwnd, 77, RGB(80, 220, 255), RGB(0, 0, 0));
                     }
                     else {
                         ClearAllCellHighlights(hwnd);
@@ -113,7 +115,7 @@ int WINAPI wWinMain(HINSTANCE hInst, HINSTANCE, PWSTR, int nCmdShow) {
 
     DWORD style = WS_OVERLAPPEDWINDOW;
 
-    RECT rc{ 0, 0, __SIZE_X, __SIZE_Y };
+    RECT rc{ 0, 0, _MtxArea.SIZE_X(), _MtxArea.SIZE_Y()};
     AdjustWindowRect(&rc, style, FALSE);
 
     HWND hwnd = CreateWindowW(
@@ -136,7 +138,7 @@ int WINAPI wWinMain(HINSTANCE hInst, HINSTANCE, PWSTR, int nCmdShow) {
         HDC hdc = GetDC(hwnd);
         RECT c{};
         GetClientRect(hwnd, &c);
-        RebuildFont(hwnd, hdc, (int)(c.right - c.left), (int)(c.bottom - c.top), __M, __N);
+        _MtxArea.RebuildFont(hwnd, hdc, (int)(c.right - c.left), (int)(c.bottom - c.top));
         ReleaseDC(hwnd, hdc);
     }
 

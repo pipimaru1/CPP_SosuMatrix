@@ -23,11 +23,20 @@ public:
     {}
 	MatrixArea() : __M(0), __N(0), __SIZE_X(0), __SIZE_Y(0) {}
 
-    int M() const { return __M; }
-    int N() const { return __N; }
-    int SIZE_X() const { return __SIZE_X; }
-	int SIZE_Y() const { return __SIZE_Y; }
+    void RebuildFont(HWND hwnd, HDC hdc, int clientW, int clientH);
+    void PaintGrid(HWND hwnd, HDC hdc);
+    void SetCellHighlight(HWND hwnd, int q, COLORREF cellColor, COLORREF textColor);
+    void InvalidateCellByQ(HWND hwnd, int q);
+    void RemoveCellHighlight(HWND hwnd, int q);
+
+
+
+ //   int M() const { return __M; }
+ //   int N() const { return __N; }
+      int SIZE_X() const { return __SIZE_X; }
+	  int SIZE_Y() const { return __SIZE_Y; }
 };
+
 
 extern std::unordered_map<int, CellStyle> g_highlightMap; // key: Q
 extern std::unordered_map<COLORREF, HBRUSH> g_brushCache;

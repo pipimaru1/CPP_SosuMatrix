@@ -99,14 +99,13 @@ int FindBestFontHeight(HDC hdc, int cellW, int cellH, int digits) {
     }
     return best;
 }
-
-void RebuildFont(HWND hwnd, HDC hdc, int clientW, int clientH, int _M, int _N)
+void MatrixArea::RebuildFont(HWND hwnd, HDC hdc, int clientW, int clientH)
 {
     // セルサイズ
-    const int cellW = std::max(1, clientW / _M);
-    const int cellH = std::max(1, clientH / _N);
+    const int cellW = std::max(1, clientW / __M);
+    const int cellH = std::max(1, clientH / __N);
 
-    const int maxVal = _N * _M;
+    const int maxVal = __N * __M;
     const int digits = NumDigits(maxVal);
 
     int bestH = FindBestFontHeight(hdc, cellW, cellH, digits);
@@ -127,8 +126,7 @@ void RebuildFont(HWND hwnd, HDC hdc, int clientW, int clientH, int _M, int _N)
 
     (void)hwnd;
 }
-
-void PaintGrid(HWND hwnd, HDC hdc, int _M, int _N)
+void MatrixArea::PaintGrid(HWND hwnd, HDC hdc)
 {
     RECT rc{};
     GetClientRect(hwnd, &rc);
@@ -141,8 +139,8 @@ void PaintGrid(HWND hwnd, HDC hdc, int _M, int _N)
     DeleteObject(bgBrush);
 
     // セル寸法（端は割り切れないので「境界座標を都度計算」してズレを最小化）
-    auto xAt = [&](int c) -> int { return (int)((long long)W * c / _M); };
-    auto yAt = [&](int r) -> int { return (int)((long long)H * r / _N); };
+    auto xAt = [&](int c) -> int { return (int)((long long)W * c / __M); };
+    auto yAt = [&](int r) -> int { return (int)((long long)H * r / __N); };
 
     // ペン/ブラシ
     HPEN gridPen = CreatePen(PS_SOLID, 1, COLOR_GRID);
@@ -160,10 +158,10 @@ void PaintGrid(HWND hwnd, HDC hdc, int _M, int _N)
     SetTextColor(hdc, COLOR_TEXT);
 
     int val = 1;
-    for (int r = 0; r < _N; ++r) {
+    for (int r = 0; r < __N; ++r) {
         int y0 = yAt(r);
         int y1 = yAt(r + 1);
-        for (int c = 0; c < _M; ++c) {
+        for (int c = 0; c < __M; ++c) {
             int x0 = xAt(c);
             int x1 = xAt(c + 1);
 
@@ -275,30 +273,27 @@ bool IsValidQ(int q, int _M, int _N)
 {
     return (1 <= q && q <= _N * _M);
 }
-
-void InvalidateCellByQ(HWND hwnd, int q, int _M, int _N)
+void MatrixArea::InvalidateCellByQ(HWND hwnd, int q)
 {
     RECT r{};
-    if (GetCellRectByQ(hwnd, q, &r, _M, _N))
+    if (GetCellRectByQ(hwnd, q, &r, __M, __N))
     {
         InvalidateRect(hwnd, &r, TRUE);
     }
 }
-
-void SetCellHighlight(HWND hwnd, int q, COLORREF cellColor, COLORREF textColor, int _M, int _N)
+void MatrixArea::SetCellHighlight(HWND hwnd, int q, COLORREF cellColor, COLORREF textColor)
 {
-    if (!IsValidQ(q, _M, _N))
+    if (!IsValidQ(q, __M, __N))
         return;
     g_highlightMap[q] = CellStyle{ cellColor, textColor };
-    InvalidateCellByQ(hwnd, q, _M, _N);
+    InvalidateCellByQ(hwnd, q);
 }
-
-void RemoveCellHighlight(HWND hwnd, int q, int _M, int _N)
+void MatrixArea::RemoveCellHighlight(HWND hwnd, int q)
 {
-    if (!IsValidQ(q, _M, _N))
+    if (!IsValidQ(q, __M, __N))
         return;
     if (g_highlightMap.erase(q) > 0)
-        InvalidateCellByQ(hwnd, q, _M, _N);
+        InvalidateCellByQ(hwnd, q);
 }
 
 void ClearAllCellHighlights(HWND hwnd)
