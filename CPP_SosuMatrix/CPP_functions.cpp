@@ -93,6 +93,19 @@ int FindBestFontHeight(HDC hdc, int cellW, int cellH, int digits)
     return best;
 }
 
+int MatrixArea::SetSize(int M, int N)
+{
+	__M = M;
+	__N = N;
+
+	_NaNumbers.resize(M * N);
+
+    for (int i = 0; i < M * N; ++i)
+        _NaNumbers[i] = NaturalNumber(i + 1);
+
+    return 0;
+}
+
 void MatrixArea::RebuildFont(HWND hwnd, HDC hdc, int clientW, int clientH)
 {
     const int cellW = std::max(1, clientW / __M);

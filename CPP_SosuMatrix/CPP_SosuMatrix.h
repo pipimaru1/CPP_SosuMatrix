@@ -28,14 +28,18 @@ class MatrixArea
     int __SIZE_Y;
 
 public:
+
     MatrixArea(int M, int N, int sizeX, int sizeY)
-        : __M(M), __N(N), __SIZE_X(sizeX), __SIZE_Y(sizeY), _NaNumbers(M * N)
     {
-        for (int i = 0; i < M * N; ++i)
-            _NaNumbers[i] = NaturalNumber(i + 1);
+        __SIZE_X = sizeX;
+        __SIZE_Y = sizeY;
+        SetSize(M, N);
     }
 
     MatrixArea() : __M(0), __N(0), __SIZE_X(0), __SIZE_Y(0) {}
+
+    int SetSize(int M, int N);
+
 
     void RebuildFont(HWND hwnd, HDC hdc, int clientW, int clientH);
     void PaintGrid(HWND hwnd, HDC hdc);
@@ -51,6 +55,8 @@ public:
 
     int SIZE_X() const { return __SIZE_X; }
     int SIZE_Y() const { return __SIZE_Y; }
+	int GET_M() const { return __M; }
+	int GET_N() const { return __N; }
 };
 
 extern std::unordered_map<COLORREF, HBRUSH> g_brushCache;
