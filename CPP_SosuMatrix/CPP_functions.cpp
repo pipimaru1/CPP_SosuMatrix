@@ -5,6 +5,7 @@ constexpr COLORREF COLOR_BG = RGB(0x20, 0x20, 0x20);
 constexpr COLORREF COLOR_GRID = RGB(0x80, 0x80, 0x80);
 constexpr COLORREF COLOR_CELL = RGB(0x30, 0x30, 0x30);
 constexpr COLORREF COLOR_TEXT = RGB(0xFF, 0xFF, 0xFF);
+constexpr COLORREF COLOR_HOVER_BORDER = RGB(0xFF, 0xD0, 0x40);
 
 HFONT g_font = nullptr;
 std::unordered_map<COLORREF, HBRUSH> g_brushCache;
@@ -97,6 +98,7 @@ int MatrixArea::SetSize(int M, int N)
 {
 	__M = M;
 	__N = N;
+    _hoverQ = 0;
 
 	_NaNumbers.resize(M * N);
 
@@ -133,6 +135,30 @@ void MatrixArea::RebuildFont(HWND hwnd, HDC hdc, int clientW, int clientH)
     (void)hwnd;
 }
 
+
+void MatrixArea::SetHoverCell(HWND hwnd, int q)
+{
+    if (!IsValidQ(q) || _hoverQ == q)
+        return;
+
+    const int previousHover = _hoverQ;
+    _hoverQ = q;
+
+    if (IsValidQ(previousHover))
+        InvalidateCellByQ(hwnd, previousHover);
+    InvalidateCellByQ(hwnd, _hoverQ);
+}
+
+void MatrixArea::ClearHoverCell(HWND hwnd)
+{
+    if (!IsValidQ(_hoverQ))
+        return;
+
+    const int previousHover = _hoverQ;
+    _hoverQ = 0;
+    InvalidateCellByQ(hwnd, previousHover);
+}
+
 void MatrixArea::PaintGrid(HWND hwnd, HDC hdc)
 {
     RECT rc{};
@@ -148,6 +174,7 @@ void MatrixArea::PaintGrid(HWND hwnd, HDC hdc)
     auto yAt = [&](int r) -> int { return (int)((long long)H * r / __N); };
 
     HPEN gridPen = CreatePen(PS_SOLID, 1, COLOR_GRID);
+    HPEN hoverPen = CreatePen(PS_SOLID, 1, COLOR_HOVER_BORDER);
     HGDIOBJ oldPen = SelectObject(hdc, gridPen);
 
     HGDIOBJ oldFont = nullptr;
@@ -166,9 +193,12 @@ void MatrixArea::PaintGrid(HWND hwnd, HDC hdc)
             RECT cell{ x0, y0, x1, y1 };
 
             const NaturalNumber& number = _NaNumbers[val - 1];
+            const bool isHovered = (val == _hoverQ);
             HBRUSH b = GetBrush(number.cellColor);
             HGDIOBJ oldB = SelectObject(hdc, b);
+            HGDIOBJ cellPen = SelectObject(hdc, isHovered ? hoverPen : gridPen);
             Rectangle(hdc, x0, y0, x1, y1);
+            SelectObject(hdc, cellPen);
             SelectObject(hdc, oldB);
 
             SetTextColor(hdc, number.textColor);
@@ -183,6 +213,7 @@ void MatrixArea::PaintGrid(HWND hwnd, HDC hdc)
         SelectObject(hdc, oldFont);
     SelectObject(hdc, oldPen);
     DeleteObject(gridPen);
+    DeleteObject(hoverPen);
 }
 
 bool GetCellRectByQ(HWND hwnd, int _Q, RECT* out, int _M, int _N)
