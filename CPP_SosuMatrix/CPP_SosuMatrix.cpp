@@ -94,9 +94,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             if (_MtxArea.TryGetQFromPoint(hwnd, x, y, &q))
             {
                 if (_MtxArea.IsCellHighlighted(q))
-                    _MtxArea.RemoveCellHighlight(hwnd, q);
-                else
-                    _MtxArea.SetCellHighlight(hwnd, q, COLOR_CLICKED, RGB(0, 0, 0));
+                    return 0;
+
+                _MtxArea.SetCellHighlight(hwnd, q, COLOR_CLICKED, RGB(0, 0, 0));
+                _MtxArea.ApplyMultiplesHighlight(hwnd, q);
             }
             return 0;
         }
