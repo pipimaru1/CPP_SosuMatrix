@@ -93,10 +93,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             int q = 0;
             if (_MtxArea.TryGetQFromPoint(hwnd, x, y, &q))
             {
-                if (_MtxArea.IsCellHighlighted(q))
-                    _MtxArea.RemoveCellHighlight(hwnd, q);
-                else
-                    _MtxArea.SetCellHighlight(hwnd, q, COLOR_CLICKED, RGB(0, 0, 0));
+                if (q == 1 || _MtxArea.IsCellHighlighted(q))
+                    return 0;
+
+                _MtxArea.SetCellHighlight(hwnd, q, COLOR_CLICKED, RGB(0, 0, 0));
+                _MtxArea.ApplyMultiplesHighlight(hwnd, q);
             }
             return 0;
         }
@@ -193,6 +194,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				case IDM_SIZE_Y157:_MtxArea.SetSize(_MtxArea.GET_M(), 157); PostMessage(hwnd, WM_SIZE, 0, 0); return 0;
 				case IDM_SIZE_Y179:_MtxArea.SetSize(_MtxArea.GET_M(), 179); PostMessage(hwnd, WM_SIZE, 0, 0); return 0;
 				case IDM_SIZE_Y211:_MtxArea.SetSize(_MtxArea.GET_M(), 211); PostMessage(hwnd, WM_SIZE, 0, 0); return 0;
+
+                case IDM_RESET:
+                {
+                    _MtxArea.ClearAllCellHighlights(hwnd);
+                    return 0;
+                }
 
                 case IDM_HIGHLIGHT:
                 {
