@@ -175,8 +175,10 @@ void MatrixArea::PaintGrid(HWND hwnd, HDC hdc)
     auto xAt = [&](int c) -> int { return (int)((long long)W * c / __M); };
     auto yAt = [&](int r) -> int { return (int)((long long)H * r / __N); };
 
-    HPEN gridPen = CreatePen(PS_SOLID, 1, COLOR_GRID);
-    HPEN hoverPen = CreatePen(PS_SOLID, 1, COLOR_HOVER_BORDER);
+    constexpr int GRID_BORDER_THICKNESS = 1;
+    constexpr int HOVER_BORDER_THICKNESS = 3;
+    HPEN gridPen = CreatePen(PS_SOLID, GRID_BORDER_THICKNESS, COLOR_GRID);
+    HPEN hoverPen = CreatePen(PS_SOLID, HOVER_BORDER_THICKNESS, COLOR_HOVER_BORDER);
     HGDIOBJ oldPen = SelectObject(hdc, gridPen);
 
     HGDIOBJ oldFont = nullptr;
