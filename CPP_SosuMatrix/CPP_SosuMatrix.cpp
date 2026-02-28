@@ -58,6 +58,30 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             return 0;
         }
 
+        case WM_MOUSEMOVE:
+        {
+            TRACKMOUSEEVENT tme{};
+            tme.cbSize = sizeof(tme);
+            tme.dwFlags = TME_LEAVE;
+            tme.hwndTrack = hwnd;
+            TrackMouseEvent(&tme);
+
+            const int x = static_cast<short>(LOWORD(lParam));
+            const int y = static_cast<short>(HIWORD(lParam));
+
+            int q = 0;
+            if (_MtxArea.TryGetQFromPoint(hwnd, x, y, &q))
+                _MtxArea.SetHoverCell(hwnd, q);
+            else
+                _MtxArea.ClearHoverCell(hwnd);
+
+            return 0;
+        }
+
+        case WM_MOUSELEAVE:
+            _MtxArea.ClearHoverCell(hwnd);
+            return 0;
+
         case WM_LBUTTONDOWN:
         {
             const int x = static_cast<short>(LOWORD(lParam));

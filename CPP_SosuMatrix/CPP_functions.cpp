@@ -97,6 +97,7 @@ int MatrixArea::SetSize(int M, int N)
 {
 	__M = M;
 	__N = N;
+    _hoverQ = 0;
 
 	_NaNumbers.resize(M * N);
 
@@ -133,6 +134,30 @@ void MatrixArea::RebuildFont(HWND hwnd, HDC hdc, int clientW, int clientH)
     (void)hwnd;
 }
 
+
+void MatrixArea::SetHoverCell(HWND hwnd, int q)
+{
+    if (!IsValidQ(q) || _hoverQ == q)
+        return;
+
+    const int previousHover = _hoverQ;
+    _hoverQ = q;
+
+    if (IsValidQ(previousHover))
+        InvalidateCellByQ(hwnd, previousHover);
+    InvalidateCellByQ(hwnd, _hoverQ);
+}
+
+void MatrixArea::ClearHoverCell(HWND hwnd)
+{
+    if (!IsValidQ(_hoverQ))
+        return;
+
+    const int previousHover = _hoverQ;
+    _hoverQ = 0;
+    InvalidateCellByQ(hwnd, previousHover);
+}
+
 void MatrixArea::PaintGrid(HWND hwnd, HDC hdc)
 {
     RECT rc{};
@@ -166,7 +191,9 @@ void MatrixArea::PaintGrid(HWND hwnd, HDC hdc)
             RECT cell{ x0, y0, x1, y1 };
 
             const NaturalNumber& number = _NaNumbers[val - 1];
-            HBRUSH b = GetBrush(number.cellColor);
+            const bool isHovered = (val == _hoverQ);
+            const COLORREF cellColor = isHovered ? RGB(0x66, 0x66, 0x66) : number.cellColor;
+            HBRUSH b = GetBrush(cellColor);
             HGDIOBJ oldB = SelectObject(hdc, b);
             Rectangle(hdc, x0, y0, x1, y1);
             SelectObject(hdc, oldB);
