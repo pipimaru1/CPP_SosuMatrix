@@ -10,7 +10,6 @@
 
 #include "stdafx.h"
 #include "CPP_SosuMatrix.h"
-
 #include "Resource.h" // リソース定義（メニュー等）
 
 MatrixArea _MtxArea(20,24, 1600,1200); // グローバルなMatrixAreaインスタンス
@@ -97,7 +96,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                 if (_MtxArea.IsCellHighlighted(q))
                     _MtxArea.RemoveCellHighlight(hwnd, q);
                 else
-                    _MtxArea.SetCellHighlight(hwnd, q, RGB(255, 220, 80), RGB(0, 0, 0));
+                    _MtxArea.SetCellHighlight(hwnd, q, COLOR_CLICKED, RGB(0, 0, 0));
             }
             return 0;
         }

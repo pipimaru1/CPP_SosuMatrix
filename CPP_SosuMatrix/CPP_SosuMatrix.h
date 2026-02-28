@@ -2,6 +2,15 @@
 #include "stdafx.h"
 #include "resource.h"
 
+constexpr COLORREF COLOR_CLICKED = RGB(255, 220, 80);
+constexpr COLORREF COLOR_MULTIPL = RGB(80, 220, 255);
+constexpr COLORREF COLOR_BG = RGB(0x20, 0x20, 0x20);
+constexpr COLORREF COLOR_GRID = RGB(0x80, 0x80, 0x80);
+constexpr COLORREF COLOR_CELL = RGB(0x30, 0x30, 0x30);
+constexpr COLORREF COLOR_TEXT = RGB(0xFF, 0xFF, 0xFF);
+constexpr COLORREF COLOR_HOVER_BORDER = RGB(0xFF, 0xD0, 0x40);
+constexpr COLORREF COLOR_HOVER = RGB(0xFF, 0xFF, 0x00);
+
 struct NaturalNumber {
     int value;
     COLORREF cellColor;
