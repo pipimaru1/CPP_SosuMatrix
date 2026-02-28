@@ -66,11 +66,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             int q = 0;
             if (_MtxArea.TryGetQFromPoint(hwnd, x, y, &q))
             {
-                auto it = g_highlightMap.find(q);
-                if (it == g_highlightMap.end())
-                    _MtxArea.SetCellHighlight(hwnd, q, RGB(255, 220, 80), RGB(0, 0, 0));
-                else
+                if (_MtxArea.IsCellHighlighted(q))
                     _MtxArea.RemoveCellHighlight(hwnd, q);
+                else
+                    _MtxArea.SetCellHighlight(hwnd, q, RGB(255, 220, 80), RGB(0, 0, 0));
             }
             return 0;
         }
@@ -98,13 +97,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                 case IDM_HIGHLIGHT:
                 {
                     // ハイライトのトグル
-                    if (g_highlightMap.empty()) 
+                    if (!_MtxArea.HasAnyHighlights()) 
                     {
                         _MtxArea.SetCellHighlight(hwnd, 50, RGB(255, 220, 80), RGB(0, 0, 0));
                         _MtxArea.SetCellHighlight(hwnd, 77, RGB(80, 220, 255), RGB(0, 0, 0));
                     }
                     else {
-                        ClearAllCellHighlights(hwnd);
+                        _MtxArea.ClearAllCellHighlights(hwnd);
                     }
                     return 0;
                 }
