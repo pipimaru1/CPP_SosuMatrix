@@ -13,7 +13,7 @@
 
 #include "Resource.h" // リソース定義（メニュー等）
 
-MatrixArea _MtxArea(10,12, 1600,1200); // グローバルなMatrixAreaインスタンス
+MatrixArea _MtxArea(20,24, 1600,1200); // グローバルなMatrixAreaインスタンス
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) 
 {
