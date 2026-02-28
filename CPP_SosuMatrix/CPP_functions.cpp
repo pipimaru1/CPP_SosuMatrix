@@ -175,10 +175,8 @@ void MatrixArea::PaintGrid(HWND hwnd, HDC hdc)
     auto xAt = [&](int c) -> int { return (int)((long long)W * c / __M); };
     auto yAt = [&](int r) -> int { return (int)((long long)H * r / __N); };
 
-    constexpr int GRID_BORDER_THICKNESS = 1;
-    constexpr int HOVER_BORDER_THICKNESS = 3;
-    HPEN gridPen = CreatePen(PS_SOLID, GRID_BORDER_THICKNESS, COLOR_GRID);
-    HPEN hoverPen = CreatePen(PS_SOLID, HOVER_BORDER_THICKNESS, COLOR_HOVER_BORDER);
+    HPEN gridPen = CreatePen(PS_SOLID, 1, COLOR_GRID);
+    HPEN hoverPen = CreatePen(PS_SOLID, 1, COLOR_HOVER_BORDER);
     HGDIOBJ oldPen = SelectObject(hdc, gridPen);
 
     HGDIOBJ oldFont = nullptr;
@@ -198,9 +196,11 @@ void MatrixArea::PaintGrid(HWND hwnd, HDC hdc)
 
             const NaturalNumber& number = _NaNumbers[val - 1];
             const bool isHovered = (val == _hoverQ);
+
             HBRUSH b = GetBrush(number.cellColor);
             HGDIOBJ oldB = SelectObject(hdc, b);
             HGDIOBJ cellPen = SelectObject(hdc, isHovered ? hoverPen : gridPen);
+
             Rectangle(hdc, x0, y0, x1, y1);
             SelectObject(hdc, cellPen);
             SelectObject(hdc, oldB);
