@@ -184,11 +184,11 @@ void MatrixArea::PaintGrid(HWND hwnd, HDC hdc)
 
     int val = 1;
 
-# pragma omp parallel for
+//# pragma omp parallel for
     for (int r = 0; r < __N; ++r) {
         int y0 = yAt(r);
         int y1 = yAt(r + 1);
-# pragma omp parallel for
+//# pragma omp parallel for
         for (int c = 0; c < __M; ++c) {
             int x0 = xAt(c);
             int x1 = xAt(c + 1);
