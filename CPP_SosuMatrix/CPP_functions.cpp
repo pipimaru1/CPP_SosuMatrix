@@ -7,6 +7,8 @@ constexpr COLORREF COLOR_CELL = RGB(0x30, 0x30, 0x30);
 constexpr COLORREF COLOR_TEXT = RGB(0xFF, 0xFF, 0xFF);
 constexpr COLORREF COLOR_HOVER_BORDER = RGB(0xFF, 0xD0, 0x40);
 
+constexpr COLORREF COLOR_HOVER = RGB(0xFF, 0xFF, 0x00);
+
 HFONT g_font = nullptr;
 std::unordered_map<COLORREF, HBRUSH> g_brushCache;
 
