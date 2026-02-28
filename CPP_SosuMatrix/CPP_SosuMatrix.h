@@ -21,6 +21,7 @@ struct NaturalNumber {
 class MatrixArea
 {
     std::vector<NaturalNumber> _NaNumbers;
+    int _hoverQ;
 
     int __M;
     int __N;
@@ -30,13 +31,14 @@ class MatrixArea
 public:
 
     MatrixArea(int M, int N, int sizeX, int sizeY)
+        : _hoverQ(0)
     {
         __SIZE_X = sizeX;
         __SIZE_Y = sizeY;
         SetSize(M, N);
     }
 
-    MatrixArea() : __M(0), __N(0), __SIZE_X(0), __SIZE_Y(0) {}
+    MatrixArea() : _hoverQ(0), __M(0), __N(0), __SIZE_X(0), __SIZE_Y(0) {}
 
     int SetSize(int M, int N);
 
@@ -52,6 +54,8 @@ public:
     bool IsValidQ(int q) const;
     bool IsCellHighlighted(int q) const;
     bool HasAnyHighlights() const;
+    void SetHoverCell(HWND hwnd, int q);
+    void ClearHoverCell(HWND hwnd);
 
     int SIZE_X() const { return __SIZE_X; }
     int SIZE_Y() const { return __SIZE_Y; }
