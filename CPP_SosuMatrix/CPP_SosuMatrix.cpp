@@ -29,7 +29,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             {
                 SetMenu(hwnd, hMenu);
                 // メニューのチェック状態を更新
-                //CheckMenuItem(hMenu, IDM_HIGHLIGHT, g_highlightQ ? MF_CHECKED : MF_UNCHECKED);
+                //CheckMenuItem(hMenu, IDM_SOSU, g_highlightQ ? MF_CHECKED : MF_UNCHECKED);
             }
             return 0;
         }break;
@@ -201,16 +201,15 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                     return 0;
                 }
 
-                case IDM_HIGHLIGHT:
+                case IDM_SOSU:
                 {
-                    // ハイライトのトグル
-                    if (!_MtxArea.HasAnyHighlights()) 
+					for (int q = 2; q <= _MtxArea.GET_M()* _MtxArea.GET_N(); ++q)
                     {
-                        _MtxArea.SetCellHighlight(hwnd, 50, RGB(255, 220, 80), RGB(0, 0, 0));
-                        _MtxArea.SetCellHighlight(hwnd, 77, RGB(80, 220, 255), RGB(0, 0, 0));
-                    }
-                    else {
-                        _MtxArea.ClearAllCellHighlights(hwnd);
+                        if (!(q == 1 || _MtxArea.IsCellHighlighted(q)))
+                        {
+                            _MtxArea.SetCellHighlight(hwnd, q, COLOR_CLICKED, RGB(0, 0, 0));
+                            _MtxArea.ApplyMultiplesHighlight(hwnd, q);
+                        }
                     }
                     return 0;
                 }

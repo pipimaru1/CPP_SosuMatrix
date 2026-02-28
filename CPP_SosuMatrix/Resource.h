@@ -13,7 +13,7 @@
 #define IDI_SMALL					108
 #define IDC_CPPSOSUMATRIX			109
 
-#define IDM_HIGHLIGHT				1001
+#define IDM_SOSU				1001
 #define IDM_RESET					1002
 
 #define IDM_SIZE_10x12				1003

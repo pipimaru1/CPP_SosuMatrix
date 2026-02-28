@@ -268,11 +268,18 @@ bool GetCellRectByQ(HWND hwnd, int _Q, RECT* out, int _M, int _N)
     return true;
 }
 
+///////////////////////////////////////////////
+// qが有効なセル番号かどうかをチェックする関数。
+// 1からM*Nまでの範囲内であれば有効とみなす。
 bool MatrixArea::IsValidQ(int q) const
 {
     return (1 <= q && q <= __N * __M);
 }
 
+///////////////////////////////////////////////
+// x, yの座標からセルの矩形を取得する関数。
+// qからセルの矩形を取得する関数。
+// qが無効な場合はfalseを返す。
 bool MatrixArea::TryGetQFromPoint(HWND hwnd, int x, int y, int* outQ) const
 {
     if (!outQ)
@@ -344,8 +351,8 @@ void MatrixArea::ApplyMultiplesHighlight(HWND hwnd, int q)
     for (int multiple = step * 2; multiple <= maxQ; multiple += step)
     {
         NaturalNumber& target = _NaNumbers[multiple - 1];
-        if (target.cellColor == COLOR_CLICKED)
-            continue;
+        //if (target.cellColor == COLOR_CLICKED)
+        //    continue;
 
         target.cellColor = COLOR_MULTIPL;
         target.textColor = COLOR_TEXT;
