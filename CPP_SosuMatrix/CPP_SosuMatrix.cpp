@@ -58,6 +58,24 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             return 0;
         }
 
+        case WM_LBUTTONDOWN:
+        {
+            const int x = static_cast<short>(LOWORD(lParam));
+            const int y = static_cast<short>(HIWORD(lParam));
+
+            int q = 0;
+            if (_MtxArea.TryGetQFromPoint(hwnd, x, y, &q))
+            {
+                auto it = g_highlightMap.find(q);
+                if (it == g_highlightMap.end())
+                    _MtxArea.SetCellHighlight(hwnd, q, RGB(255, 220, 80), RGB(0, 0, 0));
+                else
+                    _MtxArea.RemoveCellHighlight(hwnd, q);
+            }
+            return 0;
+        }
+
+
         case WM_DESTROY:
         {
             ClearBrushCache();

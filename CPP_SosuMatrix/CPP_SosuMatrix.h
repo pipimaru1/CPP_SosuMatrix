@@ -24,6 +24,8 @@ struct CellStyle {
 
 class MatrixArea
 {
+	std::vector<NaturalNumber> _NaNumbers; // 1..N*M の自然数を持つ配列、セルのスタイルもここで管理する（背景色、テキストの色）
+
     int __M;          // cols
     int __N;          // rows
     int __SIZE_X;    // initial window client-ish (actual client depends on styles)
@@ -40,7 +42,9 @@ public:
     void SetCellHighlight(HWND hwnd, int q, COLORREF cellColor, COLORREF textColor);
     void InvalidateCellByQ(HWND hwnd, int q);
     void RemoveCellHighlight(HWND hwnd, int q);
-    bool IsValidQ(int q);
+    bool TryGetQFromPoint(HWND hwnd, int x, int y, int* outQ) const;
+
+    bool IsValidQ(int q) const;
 
  //   int M() const { return __M; }
  //   int N() const { return __N; }

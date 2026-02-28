@@ -244,9 +244,30 @@ bool GetCellRectByQ(HWND hwnd, int _Q, RECT* out, int _M, int _N) {
     return true;
 }
 
-bool MatrixArea::IsValidQ(int q)
+bool MatrixArea::IsValidQ(int q) const
 {
     return (1 <= q && q <= __N * __M);
+}
+
+bool MatrixArea::TryGetQFromPoint(HWND hwnd, int x, int y, int* outQ) const
+{
+    if (!outQ)
+        return false;
+
+    RECT rc{};
+    GetClientRect(hwnd, &rc);
+
+    const int width = std::max(1L, rc.right - rc.left);
+    const int height = std::max(1L, rc.bottom - rc.top);
+
+    if (x < 0 || y < 0 || x >= width || y >= height)
+        return false;
+
+    const int col = std::min(__M - 1, (x * __M) / width);
+    const int row = std::min(__N - 1, (y * __N) / height);
+
+    *outQ = row * __M + col + 1;
+    return IsValidQ(*outQ);
 }
 void MatrixArea::InvalidateCellByQ(HWND hwnd, int q)
 {
