@@ -339,7 +339,7 @@ void MatrixArea::ClearAllCellHighlights(HWND hwnd)
     InvalidateRect(hwnd, nullptr, TRUE);
 }
 
-void MatrixArea::ApplyMultiplesHighlight(HWND hwnd, int q)
+void MatrixArea::ApplyMultiplesHighlight(HWND hwnd, int q, bool _sosufast)
 {
     if (!IsValidQ(q))
         return;
@@ -348,11 +348,32 @@ void MatrixArea::ApplyMultiplesHighlight(HWND hwnd, int q)
     const int step = selected.value;
     const int maxQ = __M * __N;
 
+    // フラッシュ用の色（例：白や黄色）
+    const COLORREF COLOR_FLASH = RGB(255, 255, 255);
+    const int flashCount = 2;  // 3回フラッシュ
+    const int delayMs = 0;    // フラッシュの速さ(ミリ秒)
+
     for (int multiple = step * 2; multiple <= maxQ; multiple += step)
     {
         NaturalNumber& target = _NaNumbers[multiple - 1];
-        //if (target.cellColor == COLOR_CLICKED)
-        //    continue;
+
+        if (!_sosufast)
+        {
+            // --- フラッシュ演出 ---
+            for (int i = 0; i < flashCount; i++) {
+                // 1. フラッシュ色に変更
+                target.cellColor = COLOR_FLASH;
+                InvalidateCellByQ(hwnd, multiple);
+                UpdateWindow(hwnd); // ★即座に画面を書き換える
+                Sleep(delayMs);     // 少し待つ
+
+                // 2. 本来の背景色に戻す（一瞬消えたように見せる）
+                target.cellColor = COLOR_CELL;
+                InvalidateCellByQ(hwnd, multiple);
+                UpdateWindow(hwnd);
+                Sleep(delayMs);
+            }
+        }
 
         target.cellColor = COLOR_MULTIPL;
         target.textColor = COLOR_TEXT;

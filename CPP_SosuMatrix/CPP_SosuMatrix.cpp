@@ -99,7 +99,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                     return 0;
 
                 _MtxArea.SetCellHighlight(hwnd, q, COLOR_CLICKED, RGB(0, 0, 0));
-                _MtxArea.ApplyMultiplesHighlight(hwnd, q);
+                _MtxArea.ApplyMultiplesHighlight(hwnd, q, false);
             }
             return 0;
         }
@@ -212,7 +212,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                         if (!(q == 1 || _MtxArea.IsCellHighlighted(q)))
                         {
                             _MtxArea.SetCellHighlight(hwnd, q, COLOR_CLICKED, RGB(0, 0, 0));
-                            _MtxArea.ApplyMultiplesHighlight(hwnd, q);
+                            _MtxArea.ApplyMultiplesHighlight(hwnd, q, _sosu_fast);
 	
                             if (!_sosu_fast)
                                 SendMessageW(hwnd, WM_PAINT, 0, 0); // 描画更新を促す
