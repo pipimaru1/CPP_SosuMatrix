@@ -12,6 +12,8 @@
 #include "CPP_SosuMatrix.h"
 #include "Resource.h" // リソース定義（メニュー等）
 
+#define MAXFALSH_MXSIZE 1000 // 描画負荷対策のため、マウスオーバーでセルを表示するのはこのサイズ以下に限定する。
+
 MatrixArea _MtxArea(20,24, 1600,1200); // グローバルなMatrixAreaインスタンス
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) 
@@ -38,6 +40,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
         case WM_SIZE: 
         {
+            // --- ここからタイトル更新処理 ---
+            wchar_t szTitle[128];
+            swprintf(szTitle, 128, L"素数で遊ぼう (%d x %d) = %d", _MtxArea.GET_M(), _MtxArea.GET_N(), _MtxArea.GET_M()*_MtxArea.GET_N());
+            SetWindowTextW(hwnd, szTitle);
+            // --- ここまで ---
+
             // サイズが変わったらフォントを作り直す（client sizeに依存）
             HDC hdc = GetDC(hwnd);
             RECT rc{};
@@ -92,6 +100,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             const int x = static_cast<short>(LOWORD(lParam));
             const int y = static_cast<short>(HIWORD(lParam));
 
+            if (_MtxArea.GET_M() * _MtxArea.GET_N() > MAXFALSH_MXSIZE)
+                _sosu_fast = true;
+            else
+				_sosu_fast = false;
+
             int q = 0;
             if (_MtxArea.TryGetQFromPoint(hwnd, x, y, &q))
             {
@@ -99,7 +112,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                     return 0;
 
                 _MtxArea.SetCellHighlight(hwnd, q, COLOR_CLICKED, RGB(0, 0, 0));
-                _MtxArea.ApplyMultiplesHighlight(hwnd, q, false);
+                _MtxArea.ApplyMultiplesHighlight(hwnd, q, _sosu_fast);
             }
             return 0;
         }
@@ -205,8 +218,26 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
                 case IDM_SOSUFAST:
 					_sosu_fast = true;
+                    for (int q = 2; q <= _MtxArea.GET_M() * _MtxArea.GET_N(); ++q)
+                    {
+                        if (!(q == 1 || _MtxArea.IsCellHighlighted(q)))
+                        {
+                            _MtxArea.SetCellHighlight(hwnd, q, COLOR_CLICKED, RGB(0, 0, 0));
+                            _MtxArea.ApplyMultiplesHighlight(hwnd, q, _sosu_fast);
+
+                            if (!_sosu_fast)
+                                SendMessageW(hwnd, WM_PAINT, 0, 0); // 描画更新を促す
+                        }
+                    }
+                    _sosu_fast = false;
+                    return 0;
+
                 case IDM_SOSU:
                 {
+					//まとめての大きさが一定以上有るときは高速表示モードにする（描画負荷対策）
+                    if(_MtxArea.GET_M() * _MtxArea.GET_N() > MAXFALSH_MXSIZE)
+						_sosu_fast = true;
+
 					for (int q = 2; q <= _MtxArea.GET_M()* _MtxArea.GET_N(); ++q)
                     {
                         if (!(q == 1 || _MtxArea.IsCellHighlighted(q)))
@@ -214,8 +245,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                             _MtxArea.SetCellHighlight(hwnd, q, COLOR_CLICKED, RGB(0, 0, 0));
                             _MtxArea.ApplyMultiplesHighlight(hwnd, q, _sosu_fast);
 	
-                            if (!_sosu_fast)
-                                SendMessageW(hwnd, WM_PAINT, 0, 0); // 描画更新を促す
+                            //if (!_sosu_fast)
+                            SendMessageW(hwnd, WM_PAINT, 0, 0); // 描画更新を促す
                         }
                     }
                     _sosu_fast = false;
